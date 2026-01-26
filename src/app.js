@@ -16,9 +16,15 @@ app.use(express.json({limit:process.env.JSON_AND_URLUNCODED_DATA_LIMIT}));
 app.use(express.urlencoded({extended:true,limit:process.env.JSON_AND_URLUNCODED_DATA_LIMIT}));
 
 //allow static folder to store image and all (sometimes helpes to live projects)
-app.use(express.static("punlic"));
+app.use(express.static("public"));
 
 //set secure cookies likes session in php
 app.use(cookieParser());
+
+//routes import
+import userRoute from './routes/user.route.js';
+
+//use routes 
+app.use('/api/v1/users',userRoute);
 
 export {app};
