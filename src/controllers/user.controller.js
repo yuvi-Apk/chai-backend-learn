@@ -217,17 +217,21 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       secure: true,
     };
 
-    const { accessToken, newRefreshToken } =
-      await generateAccessAndRefreshTokens(user._id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+      user?._id
+    );
+
+    console.log("accessToken:", accessToken);
+    console.log("newRefreshToken: ", refreshToken);
 
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", newRefreshToken, options)
+      .cookie("refreshToken", refreshToken, options)
       .json(
         new ApiResponse(
           200,
-          { accessToken, refreshToken: newRefreshToken },
+          { accessToken, refreshToken: refreshToken },
           "Access token refreshed"
         )
       );
@@ -265,7 +269,7 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 
   if (!fullname && !email) throw new ApiError("400", "All fields are required");
 
-  const user = User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: {
@@ -301,7 +305,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     { new: true }
   ).select("-password");
 
-  //   todo: Previously uploaded image to be deleted after upload upload new image to do this create a utils functions
+  //todo: Previously uploaded image to be deleted after upload upload new image to do this create a utils functions
 
   return res
     .status(200)
